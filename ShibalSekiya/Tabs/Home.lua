@@ -1,5 +1,5 @@
 return function(Home)
-    Home:Label({
+    Window:Tab({
         Title = "Auto Fishing System",
         Description = "Automatically fishes and sells your catch."
     })
