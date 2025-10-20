@@ -1,7 +1,7 @@
 return function(Home)
     Window:Tab({
-        Title = "Auto Fishing System",
-        Description = "Automatically fishes and sells your catch."
+        Title = "Developer Info",
+        Icon = "hard-drive"
     })
 
     local InviteAPI = "https://discord.com/api/v10/invites/"
