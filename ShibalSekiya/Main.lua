@@ -246,27 +246,30 @@ local myConfig = ConfigManager:CreateConfig("QuietXConfig")
 
 WindUI:SetNotificationLower(true)
 
-WindUI:Notify({
-	Title = "QuietXHub",
-	Content = "All Features Loaded!",
-	Duration = 5,
-	Image = "square-check-big"
-})
+-- Semua kode Window / UI kamu tetap di sini (seperti yang kamu kirim)
+-- ↓ Tambahkan ini setelah semua Tab dideklarasikan
 
-local TabsFolder = "ShibalSekiya/Tabs"
-
-local function LoadTab(file, env)
-    local path = TabsFolder .. "/" .. file .. ".lua"
-    local tabFunc = loadfile(path)
-    if tabFunc then
-        setfenv(tabFunc, env or getfenv())
-        local success, result = pcall(tabFunc)
-        if not success then
-            warn("[QuietXHub] Gagal memuat tab:", file, result)
-        end
-    else
-        warn("[QuietXHub] File tidak ditemukan:", path)
+-- Fungsi untuk load tab dari GitHub
+local function loadTab(tab, fileName)
+    local success, err = pcall(function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/<USERNAME>/QuietXHub/main/Tabs/" .. fileName .. ".lua"))()(tab)
+    end)
+    if not success then
+        warn("[QuietXHub] Gagal load tab " .. fileName .. ": " .. tostring(err))
+        WindUI:Notify({
+            Title = "QuietXHub",
+            Content = "Gagal load tab: " .. fileName,
+            Duration = 5,
+            Image = "x"
+        })
     end
 end
 
-LoadTab("Home")
+loadTab(Home, "Home")
+
+WindUI:Notify({
+    Title = "QuietXHub",
+    Content = "All Tabs Loaded Successfully!",
+    Duration = 5,
+    Image = "square-check-big"
+})
