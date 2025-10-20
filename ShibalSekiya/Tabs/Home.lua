@@ -4,6 +4,10 @@ return function(Home)
         Icon = "hard-drive"
     })
 
+     
+     local HttpService = game:GetService("HttpService")
+     local RunService = game:GetService("RunService")
+
     local InviteAPI = "https://discord.com/api/v10/invites/"
     local function LookupDiscordInvite(inviteCode)
         local url = InviteAPI .. inviteCode .. "?with_counts=true"
