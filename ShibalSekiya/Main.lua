@@ -246,13 +246,9 @@ local myConfig = ConfigManager:CreateConfig("QuietXConfig")
 
 WindUI:SetNotificationLower(true)
 
--- Semua kode Window / UI kamu tetap di sini (seperti yang kamu kirim)
--- ↓ Tambahkan ini setelah semua Tab dideklarasikan
-
--- Fungsi untuk load tab dari GitHub
 local function loadTab(tab, fileName)
     local success, err = pcall(function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/<USERNAME>/QuietXHub/main/Tabs/" .. fileName .. ".lua"))()(tab)
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/quietxhub99/shibal/refs/heads/main/ShibalSekiya/Tabs/" .. fileName .. ".lua"))()(tab)
     end)
     if not success then
         warn("[QuietXHub] Gagal load tab " .. fileName .. ": " .. tostring(err))
