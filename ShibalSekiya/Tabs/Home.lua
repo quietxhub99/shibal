@@ -1,33 +1,23 @@
 return function(Home)
+    -- 🧠 Tab Info
     Window:Tab({
         Title = "Developer Info",
         Icon = "hard-drive"
     })
 
-     
-     local HttpService = game:GetService("HttpService")
-     local RunService = game:GetService("RunService")
+    local HttpService = game:GetService("HttpService")
 
-    local InviteAPI = "https://discord.com/api/v10/invites/"
+    -------------------------------------------
+    -- 🔗 Discord Invite Info
+    -------------------------------------------
     local function LookupDiscordInvite(inviteCode)
-        local url = InviteAPI .. inviteCode .. "?with_counts=true"
+        local url = string.format("https://discord.com/api/v10/invites/%s?with_counts=true", inviteCode)
         local success, response = pcall(function()
             return game:HttpGet(url)
         end)
-    
-        if success then
-            local data = HttpService:JSONDecode(response)
-            return {
-                name = data.guild and data.guild.name or "Unknown",
-                id = data.guild and data.guild.id or "Unknown",
-                online = data.approximate_presence_count or 0,
-                members = data.approximate_member_count or 0,
-                icon = data.guild and data.guild.icon
-                    and "https://cdn.discordapp.com/icons/"..data.guild.id.."/"..data.guild.icon..".png"
-                    or "",
-            }
-        else
-            warn("Gagal mendapatkan data invite.")
+
+        if not success then
+            warn("[Discord] Gagal mendapatkan data invite:", response)
             return nil
         end
     end
@@ -44,70 +34,63 @@ return function(Home)
             Locked = true,
         })
     else
-        warn("Invite tidak valid.")
+        warn("[Discord] Invite tidak valid.")
     end
-    
-    local GitHubAPI = "https://api.github.com/users/"
-    
+
+    -------------------------------------------
+    -- 🧑‍💻 GitHub Info
+    -------------------------------------------
     local function LookupGitHubUser(username)
-        local url = GitHubAPI .. username
+        local url = "https://api.github.com/users/" .. username
         local success, response = pcall(function()
             return game:HttpGet(url)
         end)
-    
-        if success then
-            local data = HttpService:JSONDecode(response)
-            return {
-                login = data.login or username,
-                name = data.name or "No Name",
-                bio = data.bio or "No bio available",
-                followers = data.followers or 0,
-                following = data.following or 0,
-                repos = data.public_repos or 0,
-                avatar = data.avatar_url or "",
-                html_url = data.html_url or "",
-            }
-        else
-            warn("Gagal mendapatkan data GitHub.")
+
+        if not success then
+            warn("[GitHub] Gagal mendapatkan data user:", response)
             return nil
         end
+
+        local data = HttpService:JSONDecode(response)
+        return {
+            login = data.login or username,
+            name = data.name or "No Name",
+            repos = data.public_repos or 0,
+            avatar = data.avatar_url or "",
+        }
     end
-    
-    local githubUsername = "ohmygod-king" 
-    local githubData = LookupGitHubUser(githubUsername)
-    
+
+    local githubData = LookupGitHubUser("ohmygod-king")
     if githubData then
         Home:Paragraph({
             Title = string.format("[GITHUB] %s", githubData.name),
-            Desc = string.format(
-                "Username: %s\nRepos: %d",
-                githubData.login,
-                githubData.repos
-            ),
+            Desc = string.format("Username: %s\nRepos: %d", githubData.login, githubData.repos),
             Image = githubData.avatar,
             ImageSize = 50,
             Locked = true,
         })
     else
-        warn("GitHub user tidak ditemukan.")
+        warn("[GitHub] User tidak ditemukan.")
     end
-    
+
+    -------------------------------------------
+    -- 🔁 Auto Rejoin on Error Prompt
+    -------------------------------------------
+    local TeleportService = game:GetService("TeleportService")
+    local Player = game.Players.LocalPlayer
+
     if getgenv().AutoRejoinConnection then
         getgenv().AutoRejoinConnection:Disconnect()
-        getgenv().AutoRejoinConnection = nil
     end
-    
+
     getgenv().AutoRejoinConnection = game:GetService("CoreGui").RobloxPromptGui.promptOverlay.ChildAdded:Connect(function(child)
         task.wait()
-        if child.Name == "ErrorPrompt" and child:FindFirstChild("MessageArea") and child.MessageArea:FindFirstChild("ErrorFrame") then
-            local TeleportService = game:GetService("TeleportService")
-            local Player = game.Players.LocalPlayer
-            task.wait(2) 
+        if child.Name == "ErrorPrompt" 
+            and child:FindFirstChild("MessageArea") 
+            and child.MessageArea:FindFirstChild("ErrorFrame") then
+
+            task.wait(2)
             TeleportService:Teleport(game.PlaceId, Player)
         end
     end)
 end
-
--------------------------------------------
------ =======[ HOME TAB ]
--------------------------------------------
